@@ -1,0 +1,448 @@
+import threading
+
+Imports threading module.
+
+Used to run multiple processes simultaneously.
+
+import time
+
+Imports time module.
+
+Used for delays using sleep().
+
+import random
+
+Imports random module.
+
+Used to generate random execution time.
+
+Create TokenRing Class
+class TokenRing:
+
+Creates a class named TokenRing.
+
+Represents token ring system.
+
+Constructor
+def __init__(self, num_processes):
+
+Constructor function.
+
+Runs automatically when object is created.
+
+self.num_processes = num_processes
+
+Stores total number of processes.
+
+Example:
+
+5 processes
+self.token = True
+
+Creates token.
+
+True means token is available.
+
+self.current_holder = 0
+
+Initially process 0 holds token.
+
+self.lock = threading.Lock()
+
+Creates lock object.
+
+Used to prevent multiple threads from accessing shared data together.
+
+self.running = True
+
+Controls loop execution.
+
+Program keeps running while this is True.
+
+Critical Section Function
+def critical_section(self, process_id):
+
+Function for critical section.
+
+Only one process can enter here at a time.
+
+print(f"Process {process_id} ENTERING critical section.")
+
+Prints entering message.
+
+Example:
+
+Process 1 ENTERING critical section.
+time.sleep(random.uniform(1, 2))
+
+Pauses process for:
+
+1 to 2 seconds.
+
+Simulates process doing work.
+
+print(f"Process {process_id} EXITING critical section.")
+
+Prints exit message.
+
+Request Token Function
+def request_token(self, process_id):
+
+Function where process requests token.
+
+while self.running:
+
+Runs continuously while program is active.
+
+with self.lock:
+
+Locks critical code section.
+
+Only one thread can execute this block at a time.
+
+Check Token Ownership
+if self.current_holder == process_id and self.token:
+
+Checks:
+
+does current process have token?
+
+If yes:
+
+process can enter critical section.
+Enter Critical Section
+self.critical_section(process_id)
+
+Calls critical section function.
+
+Release Token
+self.token = False
+
+Temporarily removes token.
+
+Pass Token to Next Process
+self.current_holder = (process_id + 1) % self.num_processes
+
+Moves token to next process.
+
+Example
+
+If:
+
+current process = 2
+total processes = 5
+
+Then:
+
+(2 + 1) % 5 = 3
+
+Token moves to process 3.
+
+Circular Ring Logic
+
+If current process = 4:
+
+(4 + 1) % 5 = 0
+
+Token returns to process 0.
+
+Creates circular ring.
+
+Make Token Available Again
+self.token = True
+
+Makes token available for next process.
+
+Delay
+time.sleep(1)
+
+Pauses thread for 1 second.
+
+Reduces CPU usage.
+
+Start Function
+def start(self):
+
+Starts token ring simulation.
+
+threads = []
+
+Creates empty list to store threads.
+
+Loop Through Processes
+for i in range(self.num_processes):
+
+Loops from:
+
+0 to total processes.
+Create Thread
+t = threading.Thread(target=self.request_token, args=(i,))
+
+Creates thread for each process.
+
+Each thread runs:
+
+request_token()
+threads.append(t)
+
+Stores thread in list.
+
+t.start()
+
+Starts thread execution.
+
+Keep Program Alive
+while True:
+
+Infinite loop.
+
+Keeps main program running.
+
+time.sleep(0.1)
+
+Small delay to reduce CPU usage.
+
+Handle Keyboard Interrupt
+except KeyboardInterrupt:
+
+Executes when user presses:
+
+Ctrl + C
+Stop Simulation
+self.running = False
+
+Stops all process loops.
+
+print("\nStopping simulation...")
+
+Displays stop message.
+
+Wait for Threads to Finish
+for t in threads:
+
+Loops through all threads.
+
+t.join()
+
+Waits until each thread finishes.
+
+Main Program
+if __name__ == "__main__":
+
+Program execution starts here.
+
+Create Token Ring Object
+ring = TokenRing(num_processes=5)
+
+Creates token ring with:
+
+5 processes.
+Start Simulation
+ring.start()
+
+Starts token ring execution.
+
+Overall Working
+Process 0 gets token
+        ↓
+Enter critical section
+        ↓
+Exit critical section
+        ↓
+Pass token to Process 1
+        ↓
+Process 1 enters
+        ↓
+repeat in circular order
+
+
+/////////////////////////////////
+////////////////////////////////
+
+
+Logic of This Code
+This code implements the Token Ring Mutual Exclusion algorithm.
+The main logic is:
+
+Only the process holding the token can enter the critical section.
+
+After completing its work, the token is passed to the next process in a circular order.
+
+Problem This Algorithm Solves
+In distributed systems:
+
+
+many processes may try to use the same shared resource,
+
+
+if multiple processes access it together, conflicts occur.
+
+
+Example:
+
+
+shared file,
+
+
+printer,
+
+
+database,
+
+
+memory.
+
+
+So only one process should access the resource at a time.
+This is called:
+Mutual Exclusion
+
+Main Idea of Token Ring
+A special object called token circulates among processes.
+Rule:
+Process with token → can enter critical sectionProcess without token → must wait
+
+Ring Structure
+Processes form a circular ring.
+Example:
+0 → 1 → 2 → 3 → 4 → 0
+The token continuously moves in this order.
+
+Main Logic Step-by-Step
+
+Step 1: Create Processes
+ring = TokenRing(num_processes=5)
+Creates 5 processes.
+
+Step 2: Give Token to Process 0
+self.current_holder = 0
+Initially:
+
+
+Process 0 owns token.
+
+
+
+Step 3: All Processes Keep Checking
+Each process continuously checks:
+if self.current_holder == process_id and self.token:
+Meaning:
+"Do I currently have the token?"
+
+Step 4: Enter Critical Section
+If process has token:
+self.critical_section(process_id)
+Process enters critical section.
+Only one process can enter because:
+
+
+only one token exists.
+
+
+
+Example
+Process 0 ENTERING critical section
+Other processes wait.
+
+Step 5: Simulate Work
+time.sleep(random.uniform(1,2))
+Simulates process using shared resource.
+
+Step 6: Exit Critical Section
+Process 0 EXITING critical section
+Process finishes work.
+
+Step 7: Pass Token to Next Process
+self.current_holder = (process_id + 1) % self.num_processes
+Moves token to next process.
+
+Example
+If current process:
+Process 2
+Then:
+(2 + 1) % 5 = 3
+Token goes to Process 3.
+
+Circular Ring Logic
+If current process is last process:
+Process 4
+Then:
+(4 + 1) % 5 = 0
+Token returns to Process 0.
+This creates circular ring movement.
+
+Step 8: Repeat Forever
+Processes continuously:
+
+
+wait for token,
+
+
+use critical section,
+
+
+pass token.
+
+
+
+Important Logic Used
+
+1. Only One Token Exists
+self.token = True
+Ensures:
+
+
+only one process enters critical section.
+
+
+
+2. Lock Prevents Race Conditions
+with self.lock:
+Prevents multiple threads from modifying token data simultaneously.
+
+3. Threads Simulate Processes
+threading.Thread()
+Each thread acts like a separate process.
+
+Overall Working Flow
+Token starts at Process 0        ↓Process 0 enters critical section        ↓Process 0 exits        ↓Token moves to Process 1        ↓Process 1 enters critical section        ↓Token moves to Process 2        ↓Repeat continuously
+
+Example Output Logic
+Process 0 ENTERING critical sectionProcess 0 EXITING critical sectionProcess 1 ENTERING critical sectionProcess 1 EXITING critical sectionProcess 2 ENTERING critical section...
+Notice:
+
+
+only one process runs critical section at a time.
+
+
+
+Why Token Ring Is Useful
+Advantages:
+
+
+avoids conflicts,
+
+
+prevents simultaneous access,
+
+
+ensures fairness,
+
+
+avoids starvation.
+
+
+Used in:
+
+
+distributed systems,
+
+
+network communication,
+
+
+shared resource management,
+
+
+synchronization systems.
+

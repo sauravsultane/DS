@@ -1,0 +1,402 @@
+import random
+Imports random module to create random network delay.
+
+class Node:
+Creates a class named Node.
+A node represents one computer/system in the network.
+
+def __init__(self, node_id, clock_time):
+Constructor function.
+Runs automatically when a node object is created.
+
+self.node_id = node_id
+Stores node number/ID.
+Example:
+
+
+Node 1
+
+
+Node 2
+
+
+
+self.clock_time = clock_time
+Stores current clock time of node.
+
+def get_time(self):
+Function to get current clock time.
+
+return self.clock_time
+Returns node's clock value.
+
+def adjust_time(self, offset):
+Function to change node time.
+
+self.clock_time += offset
+Adds offset to clock time.
+If offset is:
+
+
+positive → increase time
+
+
+negative → decrease time
+
+
+
+def __repr__(self):
+Controls how node object prints on screen.
+
+return f"Node {self.node_id}: {self.clock_time:.2f} sec"
+Prints node details nicely.
+Example:
+Node 1: 102.00 sec
+
+Coordinator Class
+class Coordinator(Node):
+Creates coordinator class.
+Coordinator is a special node.
+It inherits features from Node.
+
+def synchronize_clocks(self, nodes):
+Function used to synchronize all clocks.
+
+print("Polling times from all nodes...")
+Prints message.
+Coordinator starts collecting times.
+
+times = {}
+Creates empty dictionary.
+Used to store time differences.
+
+for node in nodes:
+Loops through all nodes.
+
+if node.node_id == self.node_id:    continue
+Skips coordinator itself.
+Coordinator doesn't poll its own time.
+
+delay = random.uniform(0.1, 0.5)
+Creates random network delay between:
+
+
+0.1 sec
+
+
+0.5 sec
+
+
+Simulates real network communication delay.
+
+node_time = node.get_time() + delay / 2
+Gets node time.
+Adds half network delay.
+Assumes delay is symmetric.
+
+times[node.node_id] = node_time - self.clock_time
+Calculates difference between:
+
+
+node clock
+
+
+coordinator clock
+
+
+Stores difference in dictionary.
+
+print(f"Node {node.node_id} time: {node.get_time():.2f}, adjusted for delay: {node_time:.2f}")
+Prints:
+
+
+original node time
+
+
+adjusted time after delay
+
+
+
+times[self.node_id] = 0.0
+Adds coordinator time difference.
+Coordinator difference with itself is 0.
+
+Average Calculation
+average_offset = sum(times.values()) / len(times)
+Calculates average clock difference.
+Used as synchronized time reference.
+
+print(f"\nCalculated average offset: {average_offset:.2f} seconds")
+Prints average offset.
+
+Adjusting Clocks
+for node in nodes:
+Loops through all nodes again.
+
+offset = average_offset - times[node.node_id]
+Calculates correction value for each node.
+This is the offset.
+
+node.adjust_time(offset)
+Adjusts node clock using offset.
+
+print(f"Adjusting Node {node.node_id} by {offset:+.2f} seconds")
+Prints:
+
+
+how much node time changes
+
+
+Example:
+Adjusting Node 1 by -1.74 seconds
+
+print("\nSynchronization complete.\n")
+Prints synchronization completed message.
+
+Main Program Starts
+if __name__ == "__main__":
+Starts execution of program.
+
+Create Nodes
+nodes = [
+Creates list of nodes.
+
+Coordinator(0, 100.0)
+Creates coordinator:
+
+
+ID = 0
+
+
+Time = 100 sec
+
+
+
+Node(1, 102.0)
+Creates Node 1 with time 102 sec.
+
+Node(2, 98.5)
+Creates Node 2 with time 98.5 sec.
+
+Node(3, 101.2)
+Creates Node 3 with time 101.2 sec.
+
+Node(4, 99.8)
+Creates Node 4 with time 99.8 sec.
+
+Initial Display
+print("Initial times:")
+Prints heading.
+
+for node in nodes:
+Loops through all nodes.
+
+print(node)
+Prints each node time.
+
+Select Coordinator
+coordinator = nodes[0]
+Selects first node as coordinator.
+
+Start Synchronization
+coordinator.synchronize_clocks(nodes)
+Coordinator synchronizes all clocks.
+
+Final Output
+print("Final times after synchronization:")
+Prints final heading.
+
+for node in nodes:
+Loops through all nodes again.
+
+print(node)
+Prints synchronized times.
+
+Overall Working
+Create Nodes     ↓Coordinator Polls Times     ↓Calculate Average Time     ↓Compute Offsets     ↓Adjust Clocks     ↓All Clocks Become Synchronized
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+
+
+Logic of This Code
+
+This program implements the Berkeley Clock Synchronization Algorithm.
+
+The main logic is:
+
+Make all computers in a network show nearly the same time.
+
+Problem
+
+In distributed systems:
+
+every computer has its own clock,
+clocks may run faster/slower,
+time becomes different on each machine.
+
+Example:
+
+Node	Time
+0	100
+1	102
+2	98.5
+3	101.2
+
+These clocks are not synchronized.
+
+Main Logic of Berkeley Algorithm
+
+The algorithm works in 5 main steps:
+
+1. Select Coordinator
+2. Collect Times
+3. Calculate Average Time
+4. Compute Offsets
+5. Adjust All Clocks
+Step 1: Select Coordinator
+Coordinator(0, 100.0)
+
+One node becomes coordinator.
+
+Coordinator controls synchronization.
+
+In this program:
+
+Node 0 = Coordinator
+Step 2: Collect Clock Times
+
+Coordinator polls every node.
+
+for node in nodes:
+
+It asks:
+
+"What is your current clock time?"
+Example
+Node	Time
+1	102
+2	98.5
+3	101.2
+Step 3: Simulate Network Delay
+delay = random.uniform(0.1, 0.5)
+
+Real networks have communication delay.
+
+The code simulates this.
+
+Example:
+
+message takes 0.4 sec to travel.
+Delay Adjustment
+node_time = node.get_time() + delay / 2
+
+Assumes:
+
+delay is equal both directions.
+
+So only half delay is added.
+
+Step 4: Calculate Time Difference
+times[node.node_id] = node_time - self.clock_time
+
+Coordinator compares:
+
+node time
+coordinator time
+Example
+
+Coordinator:
+
+100 sec
+
+Node 1:
+
+102 sec
+
+Difference:
+
+102 - 100 = +2 sec
+
+Meaning:
+
+Node 1 is 2 seconds ahead.
+Step 5: Calculate Average Time
+average_offset = sum(times.values()) / len(times)
+
+All differences are averaged.
+
+Example
+Node	Difference
+0	0
+1	+2
+2	-1.5
+3	+1
+4	-0.2
+
+Average:
+
+(0 + 2 -1.5 +1 -0.2)/5
+= 0.26 sec
+
+This becomes synchronization reference.
+
+Step 6: Calculate Offset
+offset = average_offset - times[node.node_id]
+
+Offset means:
+
+how much each clock must change.
+Example
+
+Node 1 difference:
+
++2 sec
+
+Average:
+
+0.26 sec
+
+Offset:
+
+0.26 - 2
+= -1.74 sec
+
+Meaning:
+
+decrease Node 1 clock by 1.74 sec.
+Another Example
+
+Node 2 difference:
+
+-1.5 sec
+
+Offset:
+
+0.26 - (-1.5)
+= +1.76 sec
+
+Meaning:
+
+increase Node 2 clock by 1.76 sec.
+Step 7: Adjust Clocks
+node.adjust_time(offset)
+
+Clock values are updated.
+
+Final Result
+
+All clocks become nearly equal.
+
+Example:
+
+Node	Final Time
+0	100.30
+1	100.30
+2	100.30
+3	100.30
+Core Logic in One Line
+Collect all clock times → Find average → Adjust clocks toward average

@@ -1,0 +1,78 @@
+Bully Algorithm
+
+The Bully Algorithm is used in distributed systems to select a leader/coordinator when the current coordinator fails.
+
+Basic Idea
+Every process has a unique ID.
+The process with the highest ID becomes coordinator.
+If a process notices the coordinator is dead, it starts an election.
+Working Steps
+
+Suppose processes are: P1, P2, P3, P4, P5
+
+Current coordinator = P5
+
+Now P5 crashes.
+
+P2 detects failure of P5.
+P2 sends ELECTION message to all higher ID processes:
+Sends to P3, P4, P5
+P3 and P4 reply OK because they are alive.
+Higher processes now start their own election.
+P4 sends election to P5.
+No reply from P5.
+P4 becomes coordinator.
+P4 broadcasts COORDINATOR message to all.
+Why called “Bully”?
+
+Because the process with the highest ID dominates (bullies) all smaller processes and becomes leader.
+
+Advantages
+Fast when highest process is alive.
+Simple logic.
+Disadvantages
+Many messages are generated.
+High network traffic.
+If many failures happen, elections become expensive.
+Ring Algorithm
+
+The Ring Algorithm is another leader election method where processes are arranged in a logical ring.
+
+Basic Idea
+Every process has a unique ID.
+Election message moves around the ring.
+Highest ID in the ring becomes coordinator.
+Working Steps
+
+Processes in ring:
+
+P1 → P2 → P3 → P4 → P5 → P1
+
+Suppose coordinator P5 crashes.
+
+P2 detects failure.
+P2 sends an ELECTION message containing its ID.
+Message travels in ring:
+P3 adds its ID
+P4 adds its ID
+Message returns to P2.
+Highest ID among active processes is selected.
+P4 becomes new coordinator.
+Coordinator message circulates to all processes.
+Advantages
+Fewer message collisions.
+More organized communication.
+Disadvantages
+Slower than Bully Algorithm.
+If ring breaks, communication problem occurs.
+Difference Between Bully Algorithm and Ring Algorithm
+Feature	Bully Algorithm	Ring Algorithm
+Structure	No fixed structure	Processes arranged in ring
+Coordinator Selection	Highest active ID directly wins	Highest ID found after ring traversal
+Message Passing	Sends to higher ID processes	Passes message around ring
+Speed	Faster	Slower
+Message Overhead	High	Lower
+Complexity	Simple	Slightly complex
+Failure Handling	Efficient for small systems	Better organized
+Network Traffic	More	Less
+Dependency	No ring needed	Requires logical ring

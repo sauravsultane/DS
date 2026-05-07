@@ -1,0 +1,162 @@
+class BullyAlgorithm:
+Creates a class named BullyAlgorithm.
+A class is like a blueprint to store data and functions together.
+    def __init__(self, processes, coordinator=None):
+__init__ is a constructor.
+It runs automatically when object is created.
+processes = list of active processes.
+coordinator=None means coordinator can be given manually, otherwise default value used.
+        self.processes = processes
+Stores process list inside object.
+
+Example:
+
+[1, 2, 3, 5, 6]
+        self.coordinator = coordinator or max(processes)
+Sets coordinator.
+If coordinator is given, use it.
+Otherwise choose highest process ID using max().
+
+Example:
+
+max([1,2,3,5,6]) = 6
+
+So coordinator becomes 6.
+
+Function to Check Process Alive
+    def is_alive(self, process_id):
+Function to check whether process is alive.
+        return process_id in self.processes
+Returns True if process exists in active list.
+Returns False otherwise.
+
+Example:
+
+3 in [1,2,3,5,6]
+
+Output:
+
+True
+Election Function
+    def hold_election(self, initiator):
+Starts election process.
+initiator = process starting election.
+        print(f"Process {initiator} starts election.")
+Prints which process started election.
+
+Example:
+
+Process 3 starts election.
+Find Higher Processes
+        higher_processes = [
+            p for p in self.processes if p > initiator
+        ]
+Creates list of processes having higher ID than initiator.
+
+Example:
+If initiator = 3
+
+Processes:
+
+[1,2,3,5,6]
+
+Higher processes:
+
+[5,6]
+If No Higher Process Exists
+        if not higher_processes:
+Checks whether higher process list is empty.
+
+Example:
+
+[]
+
+Means initiator has highest ID.
+
+            self.coordinator = initiator
+Makes initiator new coordinator.
+            print(f"Process {initiator} becomes the new coordinator.")
+Prints coordinator message.
+If Higher Processes Exist
+        else:
+Runs when higher processes are available.
+Send Election Messages
+            for p in higher_processes:
+Loops through higher processes one by one.
+                print(f"Process {initiator} sends election message to {p}.")
+Prints election message sending.
+
+Example:
+
+Process 3 sends election message to 5
+Process 3 sends election message to 6
+Check Responses
+            responses = [
+                p for p in higher_processes if self.is_alive(p)
+            ]
+Stores alive higher processes.
+
+Example:
+
+[5,6]
+If Responses Received
+            if responses:
+Checks if any higher process replied.
+                print(f"Process {initiator} gets responses from: {responses}")
+Prints responding processes.
+
+Example:
+
+Process 3 gets responses from [5,6]
+Find Highest Responding Process
+                highest = max(responses)
+Finds highest process ID.
+
+Example:
+
+max([5,6]) = 6
+Start Election Again
+                self.hold_election(highest)
+Highest process now starts new election.
+This is recursion (function calling itself).
+
+So:
+
+6 starts election.
+
+Since no higher process than 6,
+it becomes coordinator.
+
+If No Response Received
+            else:
+Runs if no higher process responds.
+                self.coordinator = initiator
+Initiator becomes coordinator.
+                print(f"No higher processes responded.")
+Prints no response message.
+                print(f"Process {initiator} becomes coordinator.")
+Prints final coordinator.
+Main Program
+processes = [1, 2, 3, 5, 6]
+Active processes list.
+bully = BullyAlgorithm(processes)
+Creates object of class.
+
+Coordinator automatically becomes 6.
+
+bully.hold_election(initiator=3)
+Process 3 starts election.
+
+Flow:
+
+3 sends to 5 and 6
+6 replies
+6 starts election
+6 becomes coordinator
+Final Output
+Process 3 starts election.
+Process 3 sends election message to 5.
+Process 3 sends election message to 6.
+Process 3 gets responses from: [5, 6]
+Process 6 starts election.
+Process 6 becomes the new coordinator.
